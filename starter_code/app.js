@@ -32,29 +32,35 @@ app.get("/", (req, res, next) => {
   res.render("home");
 });
 
-app.get("/artists", (req, res) => {
-  console.log("query activated");
-  // const { artist } = req.query;
-  // const query = req.query.artist
-  console.log('query:',req.query.artist)
-  //? { artist: { $regex: new RegExp('^' + artist + '.*', 'i') } } : {}
-  spotifyApi.getArtists(['2hazSY4Ef3aB9ATXW7F5w3', '6J6yx1t3nwIDyPXk5xa7O8'])
-  .then(function(data) {
-    console.log('Artists information', data.body.artists);
-    res.render("artists", { data, title: "artist list" });
-  }, function(err) {
-    console.error(err);
-  });
-  // spotifyApi.searchArtists(req.query.artist)
-  // .then(function(data) {
-  //   console.log(data.body.artists.items[0]);
-  //   // res.send(data.body.artists.items)
-  //   res.render("artists", { data, title: "artist list" });
-  // }, function(err) {
-  //   console.error(err);
-  // })
-});
+// app.get("/artists", (req, res) => {
+//   console.log("query activated");
+//   // const { artist } = req.query;
+//   const artist = req.query.artist
+//   console.log('query:',req.query.artist)
+//   //? { artist: { $regex: new RegExp('^' + artist + '.*', 'i') } } : {}
+//   spotifyApi.getArtists(artist)
+//   .then(function(data) {
+//     console.log('Artists information', data.body.artists);
+//     res.render("artists", { data: data.body.artists.items});
+//   }, function(err) {
+//     console.error(err);
+//   });
+// });
 
+app.get('/artists', (req, res, next) => {
+  let artist = req.query.artist;
+
+  spotifyApi.searchArtists(artist)
+  .then(artists => {
+      //  console.log(artists.body.artists.items[0])
+    res.render('artists', {
+      artists: artists.body.artists.items
+    });
+  })
+  .catch(error => {
+    console.log("ERR",error)
+  })
+})
 
 // app.get("/beer", (req, res, next) => {
 //   // const beer1 = punkAPI.getBeer();
@@ -74,4 +80,3 @@ app.get("/artists", (req, res) => {
 app.listen(3000, () => {
   console.log("Server listening on port 3000");
 });
-
